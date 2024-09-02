@@ -3,21 +3,47 @@
 import { db } from "@/db";
 import { redirect } from "next/navigation";
 
-// export default async function createSnippet(formData: FormData) {
-//     // Check the user's input s and make sure that they are valid
-//     const title = formData.get('title') as string;
-//     const code = formData.get('code') as string;
+export async function createSnippet(
+    formState: {message: string}, 
+    formData: FormData
+) {
+    try {
+        // Check the user's input s and make sure that they are valid
+        const title = formData.get('title');
+        const code = formData.get('code');
 
-//     // Create the snippet
-//     const snippet = await db.snippet.create({
-//         data: {
-//             title,
-//             code
-//         }
-//     });
+        if (typeof title !== 'string' || title.length < 3) {
+            return {
+                message: "Title must be longer!"
+            }
+        }
 
-//     console.log('Snippet created:', snippet);
-// }
+        if (typeof code !== 'string' || code.length < 10) {
+            return {
+                message: "Code must be longer!"
+            }
+        }
+
+        // Create the snippet
+        const snippet = await db.snippet.create({
+            data: {
+                title,
+                code
+            }
+        });
+
+        console.log('Snippet created:', snippet);
+    } catch (err: unknown) {
+        console.error(err);
+        return {
+            message: err instanceof Error ? err.message : 'An error occurred!'
+        }
+    }
+    
+
+    // Redirect the user to the root route
+    redirect('/');
+}
 
 export async function editSnippet(id: number, code: string) {
     await db.snippet.update({
