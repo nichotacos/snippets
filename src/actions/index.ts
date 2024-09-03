@@ -2,6 +2,7 @@
 
 import { db } from "@/db";
 import { redirect } from "next/navigation";
+import { revalidatePath } from "next/cache";
 
 export async function createSnippet(
     formState: {message: string}, 
@@ -42,6 +43,7 @@ export async function createSnippet(
     
 
     // Redirect the user to the root route
+    revalidatePath('/');
     redirect('/');
 }
 
@@ -55,6 +57,7 @@ export async function editSnippet(id: number, code: string) {
         }
     });
 
+    revalidatePath('/snippets/' + id);
     redirect('/snippets/' + id);
 }
 
@@ -63,5 +66,6 @@ export async function deleteSnippet(id: number) {
         where: { id }
     });
 
+    revalidatePath('/');
     redirect('/');
 }
